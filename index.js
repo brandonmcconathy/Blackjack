@@ -1,24 +1,23 @@
 const startEl = document.getElementById("start-game")
 const containerEl = document.getElementById("container")
-const newEl = document.getElementById("new-hand")
+const bustedEl = document.getElementById("busted-btn")
+const blackjackEl = document.getElementById("blackjack-btn")
+const winEl = document.getElementById("win-btn")
+const pushEl = document.getElementById("push-btn")
 let deckId = ""
 let cards = new Array()
 let playerValue = 0
 let dealerValue = 0
 
 startEl.addEventListener("click", gameplay)
-newEl.addEventListener("click", gameplay)
+bustedEl.addEventListener("click", gameplay)
+blackjackEl.addEventListener("click", gameplay)
+winEl.addEventListener("click", gameplay)
+pushEl.addEventListener("click", gameplay)
 
 function gameplay() {
   resetmodal()
   startGame()
-
-  // checks if player has 21
-  if (playerValue === 21) {
-    win()
-    return
-  }
-
 }
 
 async function startGame() {
@@ -29,7 +28,7 @@ async function startGame() {
   for (let i=0; i < 4; i++){
     cards[i] = await drawCard()
   }
-  renderGameplay(cards)
+  renderGameplay()
   playerValue = updateValue(playerValue, cards[0].value)
   dealerValue = updateValue(dealerValue, cards[1].value)
   playerValue = updateValue(playerValue, cards[2].value)
@@ -43,7 +42,7 @@ async function drawCard() {
   return data.cards[0]
 }
 
-function renderGameplay(cards) {
+function renderGameplay() {
   containerEl.innerHTML = `
   <h1>Dealer</h1>
   <div class="card-container" id="dealer-cards">
@@ -73,6 +72,9 @@ function renderGameplay(cards) {
         document.getElementById("hit").disabled = false
         document.getElementById("stand").disabled = false
         document.getElementById("count").textContent = playerValue
+        if (playerValue === 21) {
+          blackjack()
+        }
         }, 700)
       }, 700)
     }, 700)
@@ -98,7 +100,9 @@ function updateValue(value, card) {
 
 function checkValue(value) {
   if (value > 21) {
-    busted()
+    document.getElementById("hit").disabled = true
+    document.getElementById("stand").disabled = true
+    setTimeout(busted, 1000)
   }
 }
 
@@ -112,6 +116,7 @@ async function hit() {
 
 function resetmodal() {
   document.getElementById("busted").style.display = "none"
+  document.getElementById("blackjack").style.display = "none"
   document.getElementById("container").style.filter = ""
 }
 
@@ -119,6 +124,14 @@ function busted() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
   document.getElementById("busted").style.display = "block"
+  document.getElementById("container").style.filter = "blur(2.5px)"
+  playerValue = 0
+}
+
+function blackjack() {
+  document.getElementById("hit").disabled = true
+  document.getElementById("stand").disabled = true
+  document.getElementById("blackjack").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
   playerValue = 0
 }

@@ -7,8 +7,16 @@ const pushEl = document.getElementById("push-btn")
 const loseEl = document.getElementById("lose-btn")
 let deckId = ""
 let cards = new Array()
-let playerValue = 0
-let dealerValue = 0
+let player = {
+  cards: new Array(),
+  hasAce: 0,
+  value: 0
+}
+let dealer = {
+  cards: new Array(),
+  hasAce: 0,
+  value: 0
+}
 
 startEl.addEventListener("click", gameplay)
 bustedEl.addEventListener("click", gameplay)
@@ -31,9 +39,11 @@ async function startGame() {
     cards[i] = await drawCard()
   }
   renderGameplay()
-  playerValue = updateValue(playerValue, cards[0].value)
-  playerValue = updateValue(playerValue, cards[2].value)
-  dealerValue = updateValue(dealerValue, cards[3].value)
+  player.cards.push(cards[0], cards[2])
+  dealer.cards.push(cards[1], cards[3])
+  player.value = updateValue(player.value, cards[0].value)
+  player.value = updateValue(player.value, cards[2].value)
+  dealer.value = updateValue(dealer.value, cards[3].value)
   console.log(cards)
 }
 
@@ -75,9 +85,9 @@ function renderGameplay() {
         document.getElementById("hit").disabled = false
         document.getElementById("stand").disabled = false
         document.getElementById("double").disabled = false
-        document.getElementById("player-count").textContent = playerValue
-        document.getElementById("dealer-count").textContent = dealerValue
-        if (playerValue === 21) {
+        document.getElementById("player-count").textContent = player.value
+        document.getElementById("dealer-count").textContent = dealer.value
+        if (player.value === 21) {
           blackjack()
         }
         }, 700)
@@ -101,6 +111,7 @@ function updateValue(value, card) {
   } else {
     value += Number(card)
   }
+
   return value
 }
 
@@ -117,18 +128,21 @@ async function hit() {
   document.getElementById("double").disabled = true
   card = await drawCard()
   document.getElementById("player-cards").innerHTML += `<img src="${card.image}">`
-  playerValue = updateValue(playerValue, card.value)
-  document.getElementById("player-count").textContent = playerValue
-  checkValue(playerValue)
+  player.value = updateValue(player.value, card.value)
+  document.getElementById("player-count").textContent = player.value
+  checkValue(player.value)
 }
 
 async function double() {
   card = await drawCard()
   document.getElementById("player-cards").innerHTML += `<img src="${card.image}">`
-  playerValue = updateValue(playerValue, card.value)
-  document.getElementById("player-count").textContent = playerValue
-  checkValue(playerValue)
-  dealersTurn()
+  player.value = updateValue(player.value, card.value)
+  document.getElementById("player-count").textContent = player.value
+  if (player.value > 21) {
+    checkValue(player.value)
+  } else {
+    dealersTurn()
+  }
 }
 
 function resetmodal() {
@@ -146,8 +160,8 @@ function busted() {
   document.getElementById("double").disabled = true
   document.getElementById("busted").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
-  playerValue = 0
-  dealerValue = 0
+  player.value = 0
+  dealer.value = 0
 }
 
 function blackjack() {
@@ -156,8 +170,8 @@ function blackjack() {
   document.getElementById("double").disabled = true
   document.getElementById("blackjack").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
-  playerValue = 0
-  dealerValue = 0
+  player.value = 0
+  dealer.value = 0
 }
 
 function win() {
@@ -166,8 +180,8 @@ function win() {
   document.getElementById("double").disabled = true
   document.getElementById("win").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
-  playerValue = 0
-  dealerValue = 0
+  player.value = 0
+  dealer.value = 0
 }
 
 function push() {
@@ -176,8 +190,8 @@ function push() {
   document.getElementById("double").disabled = true
   document.getElementById("push").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
-  playerValue = 0
-  dealerValue = 0
+  player.value = 0
+  dealer.value = 0
 }
 
 function lose() {
@@ -186,8 +200,8 @@ function lose() {
   document.getElementById("double").disabled = true
   document.getElementById("lose").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
-  playerValue = 0
-  dealerValue = 0
+  player.value = 0
+  dealer.value = 0
 }
 
 async function dealersTurn() {
@@ -198,17 +212,17 @@ async function dealersTurn() {
   <img src="${cards[1].image}">
   <img src="${cards[3].image}">
   `
-  dealerValue = updateValue(dealerValue, cards[1].value)
-  document.getElementById("dealer-count").textContent = dealerValue
+  dealer.value = updateValue(dealer.value, cards[1].value)
+  document.getElementById("dealer-count").textContent = dealer.value
 
-  while (dealerValue < 18) {
+  while (dealer.value < 18) {
     card = await drawCard()
     document.getElementById("dealer-cards").innerHTML += `<img src="${card.image}">`
-    dealerValue = await updateValue(dealerValue, card.value)
-    document.getElementById("dealer-count").textContent = dealerValue
+    dealer.value = await updateValue(dealer.value, card.value)
+    document.getElementById("dealer-count").textContent = dealer.value
   }
 
-  if (dealerValue > 21) {
+  if (dealer.value > 21) {
     setTimeout(win, 1000)
   } else {
     setTimeout(compareCounts, 1000)
@@ -216,9 +230,9 @@ async function dealersTurn() {
 }
 
 function compareCounts() {
-  if (dealerValue > playerValue) {
+  if (dealer.value > player.value) {
     lose()
-  } else if (dealerValue < playerValue) {
+  } else if (dealer.value < player.value) {
     win()
   } else {
     push()

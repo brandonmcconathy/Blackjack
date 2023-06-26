@@ -96,6 +96,7 @@ function renderGameplay() {
             <img src="${cards[3].image}">
             `
             setTimeout(push, 1000)
+            return
           } else {
             document.getElementById("dealer-cards").innerHTML = `
             <img src="${cards[1].image}">

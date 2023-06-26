@@ -9,12 +9,12 @@ let deckId = ""
 let cards = new Array()
 let player = {
   cards: new Array(),
-  hasAce: 0,
+  Aces: 0,
   value: 0
 }
 let dealer = {
   cards: new Array(),
-  hasAce: 0,
+  Aces: 0,
   value: 0
 }
 
@@ -32,7 +32,7 @@ function gameplay() {
 
 async function startGame() {
   containerEl.innerHTML = "<h1>loading...</h1>"
-  const response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+  const response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6")
   const data = await response.json()
   deckId = data.deck_id
   for (let i=0; i < 4; i++){
@@ -68,8 +68,8 @@ function renderGameplay() {
   <h4 id="player-count">0</h4>
   <div class="action-btns">
     <button class="action-btn" id="hit" disabled>Hit</button>
-    <button class="action-btn" id="stand" disabled>Stand</button>
     <button class="action-btn" id="double" disabled>Double</button>
+    <button class="action-btn" id="stand" disabled>Stand</button>
   </div>
   <h1>Player</h1>
   `

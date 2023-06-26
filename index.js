@@ -48,12 +48,12 @@ function renderGameplay() {
   <h1>Dealer</h1>
   <h4 id="dealer-count">0</h4>
   <div class="card-container" id="dealer-cards">
-    <img class="hidden" src="${cards[0].images.png}">
-    <img class="hidden" src="${cards[0].images.png}">
+    <img class="hidden" src="./images/card-back.png">
+    <img class="hidden" src="${cards[3].images.png}">
   </div>
   <div class="card-container" id="player-cards">
     <img class="hidden" src="${cards[0].images.png}">
-    <img class="hidden" src="${cards[0].images.png}">
+    <img class="hidden" src="${cards[2].images.png}">
   </div>
   <h4 id="player-count">0</h4>
   <div class="action-btns">
@@ -67,10 +67,10 @@ function renderGameplay() {
   const dealerEl = document.getElementById("dealer-cards")
 
   // Deals the starting hands with a delay between each card
-  setTimeout(() => {playerEl.innerHTML = `<img src="${cards[0].image}">`
-    setTimeout(() => {dealerEl.innerHTML = `<img src="./images/card-back.png">`
-      setTimeout(() => {playerEl.innerHTML += `<img src="${cards[2].image}">`
-        setTimeout(() => {dealerEl.innerHTML += `<img src="${cards[3].image}">`
+  setTimeout(() => {document.getElementsByClassName("hidden")[2].style.visibility = "visible"
+    setTimeout(() => {document.getElementsByClassName("hidden")[0].style.visibility = "visible"
+      setTimeout(() => {document.getElementsByClassName("hidden")[3].style.visibility = "visible"
+        setTimeout(() => {document.getElementsByClassName("hidden")[1].style.visibility = "visible"
         document.getElementById("hit").disabled = false
         document.getElementById("stand").disabled = false
         document.getElementById("player-count").textContent = playerValue

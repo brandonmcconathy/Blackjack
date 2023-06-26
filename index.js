@@ -87,9 +87,33 @@ function renderGameplay() {
         document.getElementById("double").disabled = false
         document.getElementById("player-count").textContent = player.value
         document.getElementById("dealer-count").textContent = dealer.value
+
+        // Checks if the player has blackjack and if the dealer has blackjack
         if (player.value === 21) {
-          blackjack()
+          if (cards[1] + cards[3] === 21) {
+            document.getElementById("dealer-cards").innerHTML = `
+            <img src="${cards[1].image}">
+            <img src="${cards[3].image}">
+            `
+            setTimeout(push, 1000)
+          } else {
+            document.getElementById("dealer-cards").innerHTML = `
+            <img src="${cards[1].image}">
+            <img src="${cards[3].image}">
+            `
+            setTimeout(blackjack, 1000)
+          }
         }
+        
+        // Checks if the dealer has blackjack
+        if (cards[1] + cards[3] === 21) {
+          document.getElementById("dealer-cards").innerHTML = `
+          <img src="${cards[1].image}">
+          <img src="${cards[3].image}">
+          `
+          setTimeout(lose, 1000)
+        }
+
         }, 700)
       }, 700)
     }, 700)

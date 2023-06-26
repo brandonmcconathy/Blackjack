@@ -59,6 +59,7 @@ function renderGameplay() {
   <div class="action-btns">
     <button class="action-btn" id="hit" disabled>Hit</button>
     <button class="action-btn" id="stand" disabled>Stand</button>
+    <button class="action-btn" id="double" disabled>Double</button>
   </div>
   <h1>Player</h1>
   `
@@ -73,6 +74,7 @@ function renderGameplay() {
         setTimeout(() => {document.getElementsByClassName("hidden")[1].style.visibility = "visible"
         document.getElementById("hit").disabled = false
         document.getElementById("stand").disabled = false
+        document.getElementById("double").disabled = false
         document.getElementById("player-count").textContent = playerValue
         document.getElementById("dealer-count").textContent = dealerValue
         if (playerValue === 21) {
@@ -85,6 +87,7 @@ function renderGameplay() {
 
   document.getElementById("hit").addEventListener("click", hit)
   document.getElementById("stand").addEventListener("click", dealersTurn)
+  document.getElementById("double").addEventListener("click", double)
 }
 
 function updateValue(value, card) {
@@ -105,16 +108,27 @@ function checkValue(value) {
   if (value > 21) {
     document.getElementById("hit").disabled = true
     document.getElementById("stand").disabled = true
+    document.getElementById("double").disabled = true
     setTimeout(busted, 1000)
   }
 }
 
 async function hit() {
+  document.getElementById("double").disabled = true
   card = await drawCard()
   document.getElementById("player-cards").innerHTML += `<img src="${card.image}">`
   playerValue = updateValue(playerValue, card.value)
   document.getElementById("player-count").textContent = playerValue
   checkValue(playerValue)
+}
+
+async function double() {
+  card = await drawCard()
+  document.getElementById("player-cards").innerHTML += `<img src="${card.image}">`
+  playerValue = updateValue(playerValue, card.value)
+  document.getElementById("player-count").textContent = playerValue
+  checkValue(playerValue)
+  dealersTurn()
 }
 
 function resetmodal() {
@@ -129,6 +143,7 @@ function resetmodal() {
 function busted() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
+  document.getElementById("double").disabled = true
   document.getElementById("busted").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
   playerValue = 0
@@ -138,6 +153,7 @@ function busted() {
 function blackjack() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
+  document.getElementById("double").disabled = true
   document.getElementById("blackjack").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
   playerValue = 0
@@ -147,6 +163,7 @@ function blackjack() {
 function win() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
+  document.getElementById("double").disabled = true
   document.getElementById("win").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
   playerValue = 0
@@ -156,6 +173,7 @@ function win() {
 function push() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
+  document.getElementById("double").disabled = true
   document.getElementById("push").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
   playerValue = 0
@@ -165,6 +183,7 @@ function push() {
 function lose() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
+  document.getElementById("double").disabled = true
   document.getElementById("lose").style.display = "block"
   document.getElementById("container").style.filter = "blur(2.5px)"
   playerValue = 0
@@ -174,6 +193,7 @@ function lose() {
 async function dealersTurn() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
+  document.getElementById("double").disabled = true
   document.getElementById("dealer-cards").innerHTML = `
   <img src="${cards[1].image}">
   <img src="${cards[3].image}">

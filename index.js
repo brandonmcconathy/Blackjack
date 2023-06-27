@@ -259,7 +259,7 @@ function resetmodal() {
   document.getElementById("win").style.display = "none"
   document.getElementById("push").style.display = "none"
   document.getElementById("lose").style.display = "none"
-  document.getElementById("container").style.filter = ""
+  document.getElementById("container").style.opacity = "1"
 }
 
 function busted() {
@@ -267,7 +267,7 @@ function busted() {
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
   document.getElementById("busted").style.display = "block"
-  document.getElementById("container").style.filter = "blur(2.5px)"
+  document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
 }
@@ -277,7 +277,7 @@ function blackjack() {
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
   document.getElementById("blackjack").style.display = "block"
-  document.getElementById("container").style.filter = "blur(2.5px)"
+  document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
 }
@@ -287,7 +287,7 @@ function win() {
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
   document.getElementById("win").style.display = "block"
-  document.getElementById("container").style.filter = "blur(2.5px)"
+  document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
 }
@@ -297,7 +297,7 @@ function push() {
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
   document.getElementById("push").style.display = "block"
-  document.getElementById("container").style.filter = "blur(2.5px)"
+  document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
 }
@@ -307,7 +307,7 @@ function lose() {
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
   document.getElementById("lose").style.display = "block"
-  document.getElementById("container").style.filter = "blur(2.5px)"
+  document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
 }

@@ -3,22 +3,29 @@ body {
   padding: 0;
   font-family: 'Caprasimo', cursive;
   user-select: none;
-}
-
-#container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  height: 100vh;
   background-image: url(images/table.png);
   background-repeat: no-repeat;
   background-size: cover;
-  
+  height: 100vh;
 }
 
-#start-game {
-  margin-bottom: 100px;
+h1 {
+  margin: 2em 0;
+}
+
+h4 {
+  margin: -40px 0;
+  color: cornsilk;
+}
+
+p {
+  font-weight: 800;
+  color: #e8e8e8;
+}
+
+img {
+  width: 100px;
+  margin: 0 -40px;
 }
 
 button {
@@ -40,23 +47,23 @@ button:active {
    outline: none;
 }
 
-img {
-  width: 100px;
-  margin: 0 -40px;
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Title page */
+
+.text-container {
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 3em;
 }
 
 .title-img {
   width: 125px;
-  margin: 0 -50px;
-}
-
-.hidden {
-  visibility: hidden;
-}
-
-h4 {
-  margin: -40px 0;
-  color: cornsilk;
+  margin: 3em -50px;
 }
 
 .modal {
@@ -77,13 +84,54 @@ h4 {
   color:orangered;
 }
 
+/* Bet Page */
+
+.bet-btns {
+  margin: .5em 0;
+}
+
+.bet-btn{
+  border-radius: 50%;
+  width: 3em;
+  height: 3em;
+  padding: 0;
+  margin: 0 .2em;
+}
+
+#place-bet {
+  margin: 1em 0;
+}
+
+/* Loading */
+
+.loading {
+  margin: 12em auto;
+}
+
+/* Gameplay Page */
+
+.chips {
+  margin: 1.8em 20px 1em auto;
+}
+
+.count {
+  margin: 1em auto;
+}
+
+.card-container {
+  margin: 1em auto;
+}
+
+.action-btns {
+  margin: 1em auto;
+}
+
+/* Utility classes */
+
 .smaller {
   font-size: 2.8rem;
 }
 
-.text-container {
-  text-align: center;
-  font-weight: 800;
-  color: #e8e8e8;
-  text-transform: uppercase;
+.hidden {
+  visibility: hidden;
 }

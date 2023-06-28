@@ -47,7 +47,8 @@ async function drawCard() {
 function renderBet() {
   resetmodal()
   containerEl.innerHTML = `
-  <h1>Place your bets</h1>
+  <p class="chips">Chips: <span id="current-chips">${chips.current}</span></p>
+  <h1 class="bet-header">Place your bets</h1>
   <h1 id="current-bet">0</h1>
   <div class="bet-btns">
     <button class="add-btn bet-btn" value="1">1</button>
@@ -68,6 +69,12 @@ function renderBet() {
     document.getElementsByClassName("bet-btn")[i].addEventListener("click", updateBet)
   }
   document.getElementById("place-bet").addEventListener("click", placeBet)
+
+  // checks if the player is able to reset their chips
+  if (chips.current === 0) {
+    containerEl.innerHTML += `<button id="reset-chips">Reset Chips</button>`
+    document.getElementById("reset-chips").addEventListener("click", resetChips)
+  }
 }
 
 function updateBet() {
@@ -75,10 +82,12 @@ function updateBet() {
   chips.current -= Number(this.value)
   checkBalance()
   document.getElementById("current-bet").textContent = chips.currentBet
+  document.getElementById("current-chips").textContent = chips.current
 }
 
 function placeBet() {
   chips.bet = chips.currentBet
+  chips.currentBet = 0
   startGame()
 }
 
@@ -136,6 +145,12 @@ function checkBalance() {
   }
 }
 
+function resetChips() {
+  document.getElementById("reset-chips").disabled = true
+  chips.current = 100
+  renderBet()
+}
+
 function renderGameplay() {
   containerEl.innerHTML = `
   <p class="chips">Chips: <span id="current-chips">${chips.current}</span></p>
@@ -167,7 +182,11 @@ function renderGameplay() {
         setTimeout(() => {document.getElementsByClassName("hidden")[1].style.visibility = "visible"
         document.getElementById("hit").disabled = false
         document.getElementById("stand").disabled = false
-        document.getElementById("double").disabled = false
+
+        // only enables the double button if the player has enough chips to double
+        if (chips.current >= (chips.bet)) {
+          document.getElementById("double").disabled = false
+        }
         document.getElementById("player-count").textContent = player.value
         document.getElementById("dealer-count").textContent = dealer.value
 
@@ -175,16 +194,20 @@ function renderGameplay() {
         if (player.value === 21) {
           if (cards[1] + cards[3] === 21) {
             document.getElementById("dealer-cards").innerHTML = `
-            <img src="${cards[1].image}">
-            <img src="${cards[3].image}">
+              <img src="${cards[1].image}">
+              <img src="${cards[3].image}">
             `
+            dealer.value = updateValue(dealer.value, cards[1].value)
+            document.getElementById("dealer-count").textContent = dealer.value
             setTimeout(push, 1000)
             return
           } else {
             document.getElementById("dealer-cards").innerHTML = `
-            <img src="${cards[1].image}">
-            <img src="${cards[3].image}">
+              <img src="${cards[1].image}">
+              <img src="${cards[3].image}">
             `
+            dealer.value = updateValue(dealer.value, cards[1].value)
+            document.getElementById("dealer-count").textContent = dealer.value
             setTimeout(blackjack, 1000)
           }
         }
@@ -192,9 +215,11 @@ function renderGameplay() {
         // Checks if the dealer has blackjack
         if (cards[1] + cards[3] === 21) {
           document.getElementById("dealer-cards").innerHTML = `
-          <img src="${cards[1].image}">
-          <img src="${cards[3].image}">
+            <img src="${cards[1].image}">
+            <img src="${cards[3].image}">
           `
+          dealer.value = updateValue(dealer.value, cards[1].value)
+          document.getElementById("dealer-count").textContent = dealer.value
           setTimeout(lose, 1000)
         }
 
@@ -219,7 +244,6 @@ function updateValue(value, card) {
   } else {
     value += Number(card)
   }
-
   return value
 }
 
@@ -228,6 +252,12 @@ function checkValue(value) {
     document.getElementById("hit").disabled = true
     document.getElementById("stand").disabled = true
     document.getElementById("double").disabled = true
+    document.getElementById("dealer-cards").innerHTML = `
+      <img src="${cards[1].image}">
+      <img src="${cards[3].image}">
+    `
+    dealer.value = updateValue(dealer.value, cards[1].value)
+    document.getElementById("dealer-count").textContent = dealer.value
     setTimeout(busted, 1000)
   }
 }
@@ -242,6 +272,10 @@ async function hit() {
 }
 
 async function double() {
+  chips.current -= chips.bet
+  chips.bet += chips.bet
+  document.getElementById("bet").textContent = chips.bet
+  document.getElementById("current-chips").textContent = chips.current
   card = await drawCard()
   document.getElementById("player-cards").innerHTML += `<img src="${card.image}">`
   player.value = updateValue(player.value, card.value)
@@ -260,6 +294,7 @@ function resetmodal() {
   document.getElementById("push").style.display = "none"
   document.getElementById("lose").style.display = "none"
   document.getElementById("container").style.opacity = "1"
+  chips.bet = 0
 }
 
 function busted() {
@@ -280,6 +315,7 @@ function blackjack() {
   document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
+  chips.current += Math.round(2.5 * chips.bet)
 }
 
 function win() {
@@ -290,6 +326,7 @@ function win() {
   document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
+  chips.current += 2 * chips.bet
 }
 
 function push() {
@@ -300,6 +337,7 @@ function push() {
   document.getElementById("container").style.opacity = ".35"
   player.value = 0
   dealer.value = 0
+  chips.current += chips.bet
 }
 
 function lose() {

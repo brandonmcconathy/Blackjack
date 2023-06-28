@@ -30,6 +30,7 @@ async function startGame() {
   for (let i=0; i < 4; i++){
     cards[i] = await drawCard()
   }
+
   player.cards.push(cards[0], cards[2])
   dealer.cards.push(cards[1], cards[3])
   player.value = updateValue(player.value, cards[0].value)
@@ -192,7 +193,7 @@ function renderGameplay() {
 
         // Checks if the player has blackjack and if the dealer has blackjack
         if (player.value === 21) {
-          if (cards[1] + cards[3] === 21) {
+          if (cards[1].value + cards[3].value === 21) {
             document.getElementById("dealer-cards").innerHTML = `
               <img src="${cards[1].image}">
               <img src="${cards[3].image}">
@@ -211,15 +212,18 @@ function renderGameplay() {
             setTimeout(blackjack, 1000)
           }
         }
-        
+
         // Checks if the dealer has blackjack
-        if (cards[1] + cards[3] === 21) {
+        if (cards[1].value + cards[3].value === 21) {
           document.getElementById("dealer-cards").innerHTML = `
             <img src="${cards[1].image}">
             <img src="${cards[3].image}">
           `
           dealer.value = updateValue(dealer.value, cards[1].value)
           document.getElementById("dealer-count").textContent = dealer.value
+          document.getElementById("hit").disabled = true
+          document.getElementById("stand").disabled = true
+          document.getElementById("double").disabled = true
           setTimeout(lose, 1000)
         }
 

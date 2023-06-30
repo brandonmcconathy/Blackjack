@@ -4,12 +4,12 @@ let deckId = ""
 let cards = new Array()
 let player = {
   cards: new Array(),
-  Aces: 0,
+  aces: 0,
   value: 0
 }
 let dealer = {
   cards: new Array(),
-  Aces: 0,
+  aces: 0,
   value: 0
 }
 let chips = {
@@ -24,6 +24,19 @@ for (let i = 0; i < 6; i++) {
 
 async function startGame() {
   containerEl.innerHTML = `<h1 class="loading">loading...</h1>`
+
+  // Resets the player and dealer objects
+  player = {
+    cards: new Array(),
+    aces: 0,
+    value: 0
+  }
+  dealer = {
+    cards: new Array(),
+    aces: 0,
+    value: 0
+  }
+
   const response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6")
   const data = await response.json()
   deckId = data.deck_id
@@ -33,9 +46,9 @@ async function startGame() {
 
   player.cards.push(cards[0], cards[2])
   dealer.cards.push(cards[1], cards[3])
-  player.value = updateValue(player.value, cards[0].value)
-  player.value = updateValue(player.value, cards[2].value)
-  dealer.value = updateValue(dealer.value, cards[3].value)
+  player = updateValue(player, player.cards[0].value)
+  player = updateValue(player, player.cards[1].value)
+  dealer = updateValue(dealer, dealer.cards[1].value)
   renderGameplay()
 }
 
@@ -158,11 +171,11 @@ function renderGameplay() {
   <h4 class="count" id="dealer-count">0</h4>
   <div class="card-container" id="dealer-cards">
     <img class="hidden" src="./images/card-back.png">
-    <img class="hidden" src="${cards[3].images.png}">
+    <img class="hidden" src="${dealer.cards[1].images.png}">
   </div>
   <div class="card-container" id="player-cards">
-    <img class="hidden" src="${cards[0].images.png}">
-    <img class="hidden" src="${cards[2].images.png}">
+    <img class="hidden" src="${player.cards[0].images.png}">
+    <img class="hidden" src="${player.cards[1].images.png}">
   </div>
   <h4 class="count" id="player-count">0</h4>
   <div class="action-btns">
@@ -193,33 +206,39 @@ function renderGameplay() {
 
         // Checks if the player has blackjack and if the dealer has blackjack
         if (player.value === 21) {
-          if (cards[1].value + cards[3].value === 21) {
+          document.getElementById("hit").disabled = true
+          document.getElementById("stand").disabled = true
+          document.getElementById("double").disabled = true
+          if (dealer.cards[0].value + dealer.cards[1].value === 21) {
             document.getElementById("dealer-cards").innerHTML = `
-              <img src="${cards[1].image}">
-              <img src="${cards[3].image}">
+              <img src="${dealer.cards[0].image}">
+              <img src="${dealer.cards[1].image}">
             `
-            dealer.value = updateValue(dealer.value, cards[1].value)
+            dealer = updateValue(dealer, dealer.cards[0].value)
             document.getElementById("dealer-count").textContent = dealer.value
             setTimeout(push, 1000)
             return
           } else {
             document.getElementById("dealer-cards").innerHTML = `
-              <img src="${cards[1].image}">
-              <img src="${cards[3].image}">
+              <img src="${dealer.cards[0].image}">
+              <img src="${dealer.cards[1].image}">
             `
-            dealer.value = updateValue(dealer.value, cards[1].value)
+            dealer = updateValue(dealer, dealer.cards[0].value)
             document.getElementById("dealer-count").textContent = dealer.value
             setTimeout(blackjack, 1000)
           }
         }
 
         // Checks if the dealer has blackjack
-        if (cards[1].value + cards[3].value === 21) {
+        if (dealer.cards[0].value + dealer.cards[1].value === 21) {
+          document.getElementById("hit").disabled = true
+          document.getElementById("stand").disabled = true
+          document.getElementById("double").disabled = true
           document.getElementById("dealer-cards").innerHTML = `
-            <img src="${cards[1].image}">
-            <img src="${cards[3].image}">
+            <img src="${dealer.cards[0].image}">
+            <img src="${dealer.cards[1].image}">
           `
-          dealer.value = updateValue(dealer.value, cards[1].value)
+          dealer = updateValue(dealer, dealer.cards[0].value)
           document.getElementById("dealer-count").textContent = dealer.value
           document.getElementById("hit").disabled = true
           document.getElementById("stand").disabled = true
@@ -237,18 +256,29 @@ function renderGameplay() {
   document.getElementById("double").addEventListener("click", double)
 }
 
-function updateValue(value, card) {
+function updateValue(user, card) {
   if (card.length > 3) {
-    value += 10
+    user.value += 10
   } else if (card.length > 2) {
-    value += 11
-    if (value > 21) {
-      value -= 10
+    user.value += 11
+    user.aces += 1
+    if (user.value > 21) {
+      user.value -= 10
     }
   } else {
-    value += Number(card)
+    user.value += Number(card)
   }
-  return value
+  if (user.value > 21) {
+    let numAces = user.aces
+    for (let i = 0; i < numAces; i++) {
+      user.value -= 10
+      user.aces -= 1
+      if (user.value < 22) {
+        return user
+      }
+    }
+  }
+  return user
 }
 
 function checkValue(value) {
@@ -257,10 +287,10 @@ function checkValue(value) {
     document.getElementById("stand").disabled = true
     document.getElementById("double").disabled = true
     document.getElementById("dealer-cards").innerHTML = `
-      <img src="${cards[1].image}">
-      <img src="${cards[3].image}">
+      <img src="${dealer.cards[0].image}">
+      <img src="${dealer.cards[1].image}">
     `
-    dealer.value = updateValue(dealer.value, cards[1].value)
+    dealer = updateValue(dealer, dealer.cards[0].value)
     document.getElementById("dealer-count").textContent = dealer.value
     setTimeout(busted, 1000)
   }
@@ -270,7 +300,7 @@ async function hit() {
   document.getElementById("double").disabled = true
   card = await drawCard()
   document.getElementById("player-cards").innerHTML += `<img src="${card.image}">`
-  player.value = updateValue(player.value, card.value)
+  player = updateValue(player, card.value)
   document.getElementById("player-count").textContent = player.value
   checkValue(player.value)
 }
@@ -282,7 +312,7 @@ async function double() {
   document.getElementById("current-chips").textContent = chips.current
   card = await drawCard()
   document.getElementById("player-cards").innerHTML += `<img src="${card.image}">`
-  player.value = updateValue(player.value, card.value)
+  player = updateValue(player, card.value)
   document.getElementById("player-count").textContent = player.value
   if (player.value > 21) {
     checkValue(player.value)
@@ -307,8 +337,6 @@ function busted() {
   document.getElementById("double").disabled = true
   document.getElementById("busted").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
-  player.value = 0
-  dealer.value = 0
 }
 
 function blackjack() {
@@ -317,8 +345,6 @@ function blackjack() {
   document.getElementById("double").disabled = true
   document.getElementById("blackjack").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
-  player.value = 0
-  dealer.value = 0
   chips.current += Math.round(2.5 * chips.bet)
 }
 
@@ -328,8 +354,6 @@ function win() {
   document.getElementById("double").disabled = true
   document.getElementById("win").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
-  player.value = 0
-  dealer.value = 0
   chips.current += 2 * chips.bet
 }
 
@@ -339,8 +363,6 @@ function push() {
   document.getElementById("double").disabled = true
   document.getElementById("push").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
-  player.value = 0
-  dealer.value = 0
   chips.current += chips.bet
 }
 
@@ -350,8 +372,6 @@ function lose() {
   document.getElementById("double").disabled = true
   document.getElementById("lose").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
-  player.value = 0
-  dealer.value = 0
 }
 
 async function dealersTurn() {
@@ -359,16 +379,16 @@ async function dealersTurn() {
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
   document.getElementById("dealer-cards").innerHTML = `
-  <img src="${cards[1].image}">
-  <img src="${cards[3].image}">
+  <img src="${dealer.cards[0].image}">
+  <img src="${dealer.cards[1].image}">
   `
-  dealer.value = updateValue(dealer.value, cards[1].value)
+  dealer = updateValue(dealer, dealer.cards[0].value)
   document.getElementById("dealer-count").textContent = dealer.value
 
-  while (dealer.value < 18) {
+  while ((dealer.value < 17) || (dealer.value < 18 && dealer.aces > 0)) {
     card = await drawCard()
     document.getElementById("dealer-cards").innerHTML += `<img src="${card.image}">`
-    dealer.value = await updateValue(dealer.value, card.value)
+    dealer = await updateValue(dealer, card.value)
     document.getElementById("dealer-count").textContent = dealer.value
   }
 

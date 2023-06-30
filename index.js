@@ -76,7 +76,7 @@ function renderBet() {
     <button class="minus-btn bet-btn" value="-10" disabled>-10</button>
     <button class="minus-btn bet-btn" value="-25" disabled>-25</button>
   </div>
-  <button id="place-bet">Place Bet</button>
+  <button id="place-bet" disabled>Place Bet</button>
   `
   checkBalance()
   for (let i = 0; i < 8; i++) {
@@ -134,25 +134,30 @@ function checkBalance() {
 
   // Checks if the minus buttons should be disabled or enabled
   if (chips.currentBet < 1) {
+    document.getElementById("place-bet").disabled = true
     for (let i = 0; i < 4; i++) {
       document.getElementsByClassName("minus-btn")[i].disabled = true
     }
   } else if (chips.currentBet < 5) {
+    document.getElementById("place-bet").disabled = false
       document.getElementsByClassName("minus-btn")[0].disabled = false
       for (let i = 1; i < 4; i++) {
         document.getElementsByClassName("minus-btn")[i].disabled = true
       }
   } else if (chips.currentBet < 10) {
+    document.getElementById("place-bet").disabled = false
       for (let i = 2; i < 4; i++) {
         document.getElementsByClassName("minus-btn")[i - 2].disabled = false
         document.getElementsByClassName("minus-btn")[i].disabled = true
       }
   } else if (chips.currentBet < 25) {
+    document.getElementById("place-bet").disabled = false
       for (let i = 0; i < 3; i++) {
         document.getElementsByClassName("minus-btn")[i].disabled = false
       }
       document.getElementsByClassName("minus-btn")[3].disabled = true
     } else {
+      document.getElementById("place-bet").disabled = false
       for (let i = 0; i < 4; i++) {
         document.getElementsByClassName("minus-btn")[i].disabled = false
       }
@@ -204,17 +209,19 @@ function renderGameplay() {
         document.getElementById("player-count").textContent = player.value
         document.getElementById("dealer-count").textContent = dealer.value
 
+        // Updates the dealers count to include the hidden card but does not show the player
+        dealer = updateValue(dealer, dealer.cards[0].value)
+
         // Checks if the player has blackjack and if the dealer has blackjack
         if (player.value === 21) {
           document.getElementById("hit").disabled = true
           document.getElementById("stand").disabled = true
           document.getElementById("double").disabled = true
-          if (dealer.cards[0].value + dealer.cards[1].value === 21) {
+          if (dealer.value === 21) {
             document.getElementById("dealer-cards").innerHTML = `
               <img src="${dealer.cards[0].image}">
               <img src="${dealer.cards[1].image}">
             `
-            dealer = updateValue(dealer, dealer.cards[0].value)
             document.getElementById("dealer-count").textContent = dealer.value
             setTimeout(push, 1000)
             return
@@ -223,14 +230,13 @@ function renderGameplay() {
               <img src="${dealer.cards[0].image}">
               <img src="${dealer.cards[1].image}">
             `
-            dealer = updateValue(dealer, dealer.cards[0].value)
             document.getElementById("dealer-count").textContent = dealer.value
             setTimeout(blackjack, 1000)
           }
         }
 
         // Checks if the dealer has blackjack
-        if (dealer.cards[0].value + dealer.cards[1].value === 21) {
+        if (dealer.value === 21) {
           document.getElementById("hit").disabled = true
           document.getElementById("stand").disabled = true
           document.getElementById("double").disabled = true
@@ -238,7 +244,6 @@ function renderGameplay() {
             <img src="${dealer.cards[0].image}">
             <img src="${dealer.cards[1].image}">
           `
-          dealer = updateValue(dealer, dealer.cards[0].value)
           document.getElementById("dealer-count").textContent = dealer.value
           document.getElementById("hit").disabled = true
           document.getElementById("stand").disabled = true
@@ -382,7 +387,6 @@ async function dealersTurn() {
   <img src="${dealer.cards[0].image}">
   <img src="${dealer.cards[1].image}">
   `
-  dealer = updateValue(dealer, dealer.cards[0].value)
   document.getElementById("dealer-count").textContent = dealer.value
 
   while ((dealer.value < 17) || (dealer.value < 18 && dealer.aces > 0)) {

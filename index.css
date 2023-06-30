@@ -79,11 +79,26 @@ button:active {
 }
 
 .modal-content {
+  display: flex;
+  flex-direction: column;
   margin: 1em auto;
   padding: 1em;
   text-align: center;
   font-size: 2rem;
   color:orangered;
+}
+
+.modal-title {
+  margin-bottom: 1em;
+}
+
+.winnings {
+  color: yellow;
+  margin-bottom: 1.5em;
+}
+
+.new-game {
+  margin: 0 auto;
 }
 
 /* Bet Page */

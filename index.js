@@ -340,6 +340,7 @@ function busted() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
+  document.getElementsByClassName("winnings")[0].textContent = `-${chips.bet}`
   document.getElementById("busted").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
 }
@@ -348,6 +349,7 @@ function blackjack() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
+  document.getElementsByClassName("winnings")[1].textContent = `+${Math.round(2.5 * chips.bet) - chips.bet}`
   document.getElementById("blackjack").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
   chips.current += Math.round(2.5 * chips.bet)
@@ -357,6 +359,7 @@ function win() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
+  document.getElementsByClassName("winnings")[2].textContent = `+${chips.bet}`
   document.getElementById("win").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
   chips.current += 2 * chips.bet
@@ -366,6 +369,7 @@ function push() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
+  document.getElementsByClassName("winnings")[3].textContent = `+${0}`
   document.getElementById("push").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
   chips.current += chips.bet
@@ -375,6 +379,7 @@ function lose() {
   document.getElementById("hit").disabled = true
   document.getElementById("stand").disabled = true
   document.getElementById("double").disabled = true
+  document.getElementsByClassName("winnings")[4].textContent = `-${chips.bet}`
   document.getElementById("lose").style.display = "block"
   document.getElementById("container").style.opacity = ".35"
 }
